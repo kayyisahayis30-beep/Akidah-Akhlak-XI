@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Asesmen Sumatif - MTs Mu'allimin NU</title>
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f766e;
+            --primary-dark: #115e59;
+            --primary-light: #ccfbf1;
+            --secondary: #d97706;
+            --dark: #0f172a;
+            --gray-bg: #f8fafc;
+            --border: #e2e8f0;
+            --text-main: #334155;
+            --success: #16a34a;
+            --danger: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--gray-bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            background: white;
+            padding: 4px;
+            border-radius: 50%;
+            border: 2px solid #fde047;
+        }
+
+        .header-title h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .header-title p {
+            font-size: 0.825rem;
+            opacity: 0.9;
+        }
+
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .timer-badge {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(4px);
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .timer-badge.warning {
+            background: var(--danger);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Container & Cards */
+        .container {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Auth Screen */
+        .auth-container {
+            max-width: 450px;
+            margin: 2rem auto;
+        }
+
+        .auth-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            color: #64748b;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .auth-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.65rem 0.85rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.65rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-secondary { background: #64748b; color: white; }
+        .btn-secondary:hover { background: #475569; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-warning { background: var(--secondary); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-block { width: 100%; }
+
+        /* Assessment Layout */
+        .exam-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .exam-layout { grid-template-columns: 1fr; }
+        }
+
+        .question-card {
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .question-type-badge {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            font-weight: 500;
+            margin-bottom: 1.25rem;
+        }
+
+        /* Options Styles */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.85rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-item:hover {
+            background: var(--gray-bg);
+            border-color: var(--primary);
+        }
+
+        .option-item.selected {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .option-item input {
+            margin-top: 0.25rem;
+        }
+
+        /* Matching Type Table */
+        .matching-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .matching-table th, .matching-table td {
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .matching-table th {
+            background: var(--gray-bg);
+            font-size: 0.85rem;
+        }
+
+        /* Question Navigation Grid */
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .nav-btn {
+            aspect-ratio: 1;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn.answered { background: var(--primary); color: white; border-color: var(--primary); }
+        .nav-btn.active { ring: 2px solid var(--secondary); outline: 2px solid var(--secondary); }
+
+        /* Admin Section */
+        .admin-nav {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .admin-nav-item {
+            padding: 0.75rem 1.25rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+        }
+
+        .admin-nav-item.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Result & Certificate */
+        .result-card {
+            text-align: center;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 8px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 1.5rem auto;
+            background: var(--primary-light);
+        }
+
+        .score-num {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .badge-status {
+            display: inline-block;
+            padding: 0.35rem 1.25rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .badge-pass { background: #dcfce7; color: #15803d; }
+        .badge-fail { background: #fee2e2; color: #b91c1c; }
+
+        /* Print Certificate Styling */
+        @media print {
+            body { background: white; color: black; }
+            header, .no-print { display: none !important; }
+            .container { max-width: 100%; margin: 0; padding: 0; }
+            .card { border: none; box-shadow: none; padding: 0; }
+            .certificate-border {
+                border: 5px double var(--primary) !important;
+                padding: 2rem !important;
+                margin: 1rem !important;
+            }
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Main App Header -->
+    <header>
+        <div class="header-brand">
+            <img id="app-logo" src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Logo MTs Mu'allimin NU" class="header-logo">
+            <div class="header-title">
+                <h1>ASESMEN SUMATIF KELAS XI</h1>
+                <p>MTs Mu'allimin NU | Disusun oleh: Amirotul Kayyisah, S.Pd.</p>
+            </div>
+        </div>
+        <div class="header-meta no-print">
+            <div id="timer-box" class="timer-badge hidden">
+                <i class="fa-regular fa-clock"></i>
+                <span id="timer-display">90:00</span>
+            </div>
+            <button id="btn-logout" class="btn btn-secondary hidden" onclick="app.logout()"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- AUTHENTICATION SCREEN -->
+        <div id="screen-auth" class="auth-container">
+            <div class="card">
+                <div class="auth-tabs">
+                    <div class="auth-tab active" onclick="app.switchAuthTab('siswa')">Mode Siswa</div>
+                    <div class="auth-tab" onclick="app.switchAuthTab('admin')">Mode Admin / Guru</div>
+                </div>
+
+                <!-- Form Siswa -->
+                <form id="form-login-siswa" onsubmit="app.loginSiswa(event)">
+                    <div class="form-group">
+                        <label>Nama Lengkap Siswa</label>
+                        <input type="text" id="siswa-nama" class="form-control" placeholder="Masukkan nama lengkap" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kelas</label>
+                        <select id="siswa-kelas" class="form-control" required>
+                            <option value="">-- Pilih Kelas --</option>
+                            <option value="XI A">XI A</option>
+                            <option value="XI B">XI B</option>
+                            <option value="XI C">XI C</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nomor Presensi (Password Siswa)</label>
+                        <input type="number" id="siswa-presensi" class="form-control" placeholder="Contoh: 12" required min="1" max="50">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-pen-to-square"></i> Mulai Asesmen</button>
+                </form>
+
+                <!-- Form Admin -->
+                <form id="form-login-admin" class="hidden" onsubmit="app.loginAdmin(event)">
+                    <div class="form-group">
+                        <label>Username Admin</label>
+                        <input type="text" id="admin-username" class="form-control" placeholder="Default: admin" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password Admin</label>
+                        <input type="password" id="admin-password" class="form-control" placeholder="Default: admin123" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-user-shield"></i> Masuk Panel Admin</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- EXAM SCREEN (SISWA / TEST MODE) -->
+        <div id="screen-exam" class="hidden">
+            <div class="exam-layout">
+                <!-- Question Box -->
+                <div class="card question-card">
+                    <div>
+                        <div class="question-header">
+                            <div>
+                                <strong style="font-size: 1.1rem; color: var(--primary-dark)">Soal No. <span id="q-number">1</span> / 35</strong>
+                            </div>
+                            <span id="q-type" class="question-type-badge">Pilihan Ganda</span>
+                        </div>
+                        <div id="q-text" class="question-text">
+                            <!-- Soal dinamis -->
+                        </div>
+                        <div id="q-options-container">
+                            <!-- Opsi Jawaban Dinamis -->
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                        <button id="btn-prev" class="btn btn-secondary" onclick="app.prevQuestion()"><i class="fa-solid fa-arrow-left"></i> Sebelumnya</button>
+                        <button id="btn-next" class="btn btn-primary" onclick="app.nextQuestion()">Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Sidebar Navigation -->
+                <div>
+                    <div class="card">
+                        <h3 style="font-size: 1rem; margin-bottom: 0.75rem; color: var(--dark)">Navigasi Soal</h3>
+                        <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 1rem;">Klik nomor untuk berpindah soal secara cepat.</p>
+                        <div id="q-nav-grid" class="nav-grid">
+                            <!-- Dynamic nav buttons -->
+                        </div>
+                        <div style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                            <button class="btn btn-success btn-block" onclick="app.confirmSubmit()"><i class="fa-solid fa-check-double"></i> Selesaikan Tes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="screen-result" class="hidden">
+            <div class="card result-card certificate-border">
+                <div id="result-header-logo" style="margin-bottom: 1rem;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" style="width: 70px; height: 70px;" alt="Logo">
+                </div>
+                <h2 style="color: var(--primary-dark); margin-bottom: 0.25rem;">LEMBAR HASIL ASESMEN SUMATIF</h2>
+                <p style="color: #64748b; font-size: 0.9rem;">MTs Mu'allimin NU - Tahun Ajaran 2026/2027</p>
+                <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 1.5rem;">Penyusun: Amirotul Kayyisah, S.Pd.</p>
+
+                <div style="text-align: left; background: var(--gray-bg); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.95rem;">
+                    <div style="display: grid; grid-template-columns: 120px 1fr; gap: 0.4rem; margin-bottom: 0.3rem;">
+                        <strong>Nama lengkap</strong><span>: <span id="res-nama">-</span></span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 120px 1fr; gap: 0.4rem; margin-bottom: 0.3rem;">
+                        <strong>Kelas</strong><span>: <span id="res-kelas">-</span></span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 120px 1fr; gap: 0.4rem; margin-bottom: 0.3rem;">
+                        <strong>No. Presensi</strong><span>: <span id="res-presensi">-</span></span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 120px 1fr; gap: 0.4rem;">
+                        <strong>Percobaan Ke-</strong><span>: <span id="res-attempt">1 dari 2</span></span>
+                    </div>
+                </div>
+
+                <div class="score-circle">
+                    <span id="res-score" class="score-num">0</span>
+                    <span class="score-label">NILAI AKHIR</span>
+                </div>
+
+                <div>
+                    <span id="res-status-badge" class="badge-status badge-pass">LULUS (KKM ≥ 80)</span>
+                </div>
+
+                <p id="res-message" style="margin-bottom: 1.5rem; font-size: 0.95rem; color: #475569;"></p>
+
+                <div class="no-print" style="display: flex; gap: 1rem; justify-content: center;">
+                    <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak / Download Hasil</button>
+                    <button id="btn-re-attempt" class="btn btn-warning hidden" onclick="app.startReAttempt()"><i class="fa-solid fa-rotate-right"></i> Coba Kesempatan Ke-2</button>
+                    <button class="btn btn-secondary" onclick="app.logout()"><i class="fa-solid fa-house"></i> Selesai & Keluar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN DASHBOARD SCREEN -->
+        <div id="screen-admin" class="hidden">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2>Panel Pengelolaan Admin & Guru</h2>
+                    <button class="btn btn-warning" onclick="app.startAdminTest()"><i class="fa-solid fa-vial"></i> Uji Coba Soal (Sebagai Siswa)</button>
+                </div>
+
+                <div class="admin-nav">
+                    <div class="admin-nav-item active" onclick="app.switchAdminTab('rekap')">Rekap Nilai Siswa</div>
+                    <div class="admin-nav-item" onclick="app.switchAdminTab('soal')">Kelola Bank Soal</div>
+                    <div class="admin-nav-item" onclick="app.switchAdminTab('pengaturan')">Pengaturan & Logo</div>
+                </div>
+
+                <!-- Tab 1: Rekap Nilai -->
+                <div id="admin-tab-rekap">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size: 1.1rem;">Daftar Hasil Nilai Asesmen Siswa</h3>
+                        <button class="btn btn-danger" onclick="app.clearStudentData()"><i class="fa-solid fa-trash"></i> Reset Data Nilai</button>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="matching-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Siswa</th>
+                                    <th>Kelas</th>
+                                    <th>No Presensi</th>
+                                    <th>Percobaan</th>
+                                    <th>Nilai Akhir</th>
+                                    <th>Status KKM (80)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-rekap-tbody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Edit Soal -->
+                <div id="admin-tab-soal" class="hidden">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Daftar & Edit 35 Soal Asesmen</h3>
+                    <div id="admin-soal-list">
+                        <!-- Dynamic list of questions to edit -->
+                    </div>
+                </div>
+
+                <!-- Tab 3: Pengaturan -->
+                <div id="admin-tab-pengaturan" class="hidden">
+                    <div style="max-width: 500px;">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Ganti Password Admin</h3>
+                        <form onsubmit="app.changeAdminPassword(event)">
+                            <div class="form-group">
+                                <label>Password Lama</label>
+                                <input type="password" id="pass-old" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Password Baru</label>
+                                <input type="password" id="pass-new" class="form-control" required minlength="4">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="margin-bottom: 2rem;">Simpan Password Baru</button>
+                        </form>
+
+                        <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Ganti URL Logo Sekolah</h3>
+                        <form onsubmit="app.changeSchoolLogo(event)">
+                            <div class="form-group">
+                                <label>URL Logo Gambar (PNG/JPG)</label>
+                                <input type="url" id="logo-url-input" class="form-control" placeholder="https://..." required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Perbarui Logo</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MAIN APP JAVASCRIPT LOGIC -->
+    <script>
+        // Default Master Questions (35 Soal Kontekstual Tanpa Kata "Kontekstual")
+        const defaultQuestions = [
+            // PART 1: 15 PILIHAN GANDA (1-15)
+            {
+                id: 1, type: 'pg',
+                text: 'Pasca Perang Siffin, Ali bin Abi Thalib dan Mu’awiyah bin Abi Sufyan sepakat mengadakan perundingan (Tahkim) untuk menyudahi pertikaian. Namun, keputusan ini memicu kekecewaan sebagian pengikut Ali yang menganggap penyelesaian konflik dengan hukum manusia adalah dosa besar. Peristiwa sejarah ini menjadi pemicu utama lahirnya...',
+                options: ['Perdebatan fikih ibadah praktis', 'Aliran-aliran pemikiran dalam ilmu kalam', 'Kodifikasi Al-Qur\'an dan Hadis', 'Perkembangan gerakan tasawuf'],
+                answer: 1
+            },
+            {
+                id: 2, type: 'pg',
+                text: 'Dalam diskusi kelas, Ahmad menjelaskan bahwa istilah *Kalam* dipergunakan karena para ulama pembahasnya menggunakan argumen rasional yang runtut tentang firman Allah. Faktor eksternal yang turut memicu pesatnya perkembangan ilmu ini adalah...',
+                options: ['Perebutan wilayah kekuasaan antar suku', 'Penerjemahan karya filsafat Yunani ke dalam bahasa Arab', 'Munculnya berbagai variasi qira\'at Al-Qur\'an', 'Penataan sistem penarikan zakat tanah'],
+                answer: 1
+            },
+            {
+                id: 3, type: 'pg',
+                text: 'Saat perundingan Tahkim usai, sekelompok pengikut Ali keluar dari barisan dan mengumandangkan slogan "La Hukma Illa Lillah" (Tidak ada hukum selain hukum Allah). Kelompok ini mengkafirkan pihak yang terlibat Tahkim. Ciri utama paham radikal ini milik aliran...',
+                options: ['Murji\'ah', 'Khawarij', 'Mu\'tazilah', 'Asy\'ariyah'],
+                answer: 1
+            },
+            {
+                id: 4, type: 'pg',
+                text: 'Hasan meyakini bahwa kepemimpinan umat Islam (Imamah) setelah Nabi Muhammad SAW secara sah dituntun wahyu dan telah diwasiatkan secara khusus kepada Ali bin Abi Thalib beserta keturunannya. Keyakinan Hasan ini selaras dengan aliran...',
+                options: ['Syi\'ah', 'Qadariyah', 'Jabariyah', 'Maturidiyah'],
+                answer: 0
+            },
+            {
+                id: 5, type: 'pg',
+                text: 'Ketika ditanya status seorang muslim yang melakukan dosa besar, Farhan berpendapat bahwa iman cukup berada di dalam hati, sedangkan perbuatan tidak memengaruhi status keimanan. Urusan hukuman dosa besar ditangguhkan di hadapan Allah. Paham ini milik...',
+                options: ['Khawarij', 'Murji\'ah', 'Mu\'tazilah', 'Qadariyah'],
+                answer: 1
+            },
+            {
+                id: 6, type: 'pg',
+                text: 'Pak Mahmud pasrah tanpa mau berikhtiar sedikit pun. Ia beranggapan manusia tidak memiliki kehendak bebas sama sekali dan bergerak bagaikan daun kering yang ditiup angin. Pemikiran fatalis Pak Mahmud ini sesuai ajaran...',
+                options: ['Jabariyah', 'Qadariyah', 'Asy\'ariyah', 'Maturidiyah'],
+                answer: 0
+            },
+            {
+                id: 7, type: 'pg',
+                text: 'Seorang mahasiswa menyatakan bahwa setiap perbuatan manusia sepenuhnya diciptakan dan ditentukan oleh kehendak serta kemampuan manusia itu sendiri tanpa campur tangan takdir secara langsung. Paham *free will* ini milik...',
+                options: ['Jabariyah', 'Qadariyah', 'Murji\'ah', 'Khawarij'],
+                answer: 1
+            },
+            {
+                id: 8, type: 'pg',
+                text: 'Dalam ajaran *Al-Manzilah Baina al-Manzilatain*, Wasil bin Ata menegaskan bahwa seorang muslim yang melakukan dosa besar dan belum bertobat berada di posisi...',
+                options: ['Tetap mukmin sejati yang sempurna', 'Kafir mutlak yang wajib dimusuhi', 'Antara mukmin dan kafir (Fasik)', 'Munafik yang pasti masuk neraka'],
+                answer: 2
+            },
+            {
+                id: 9, type: 'pg',
+                text: 'Dalam menengahi perdebatan Jabariyah dan Qadariyah, Abu al-Hasan al-Asy\'ari mengajukan konsep *Kasb*. Maksud dari konsep ini adalah...',
+                options: ['Manusia menciptakan perbuatannya sendiri secara penuh', 'Manusia dipaksa melakukan perbuatan tanpa pilihan', 'Perbuatan diciptakan Allah, tetapi manusia memiliki daya untuk mengupayakannya', 'Perbuatan manusia tidak dihisab di akhirat'],
+                answer: 2
+            },
+            {
+                id: 10, type: 'pg',
+                text: 'Aliran Maturidiyah Samarkand yang dipelopori oleh Abu Mansur al-Maturidi memberikan porsi peranan akal yang cukup besar, yaitu...',
+                options: ['Akal sanggup mengetahui kewajiban beragama sebelum datangnya wahyu', 'Akal berada di atas otoritas wahyu Al-Qur\'an', 'Akal tidak memiliki peran dalam masalah aqidah', 'Akal dapat menggugurkan syariat ibadah'],
+                answer: 0
+            },
+            {
+                id: 11, type: 'pg',
+                text: 'Seseorang dengan sengaja menyerang tetangganya menggunakan senjata tajam hingga tewas. Dalam hukum syariat Islam, tindak pidana pembunuhan disengaja ini diancam dengan hukuman pokok berupa...',
+                options: ['Diyat mukhaffafah (denda ringan)', 'Hukuman Qisas (atau Diyat mughallazah jika dimaafkan ahli waris)', 'Puasa dua bulan berturut-turut', 'Pengasingan wilayah'],
+                answer: 1
+            },
+            {
+                id: 12, type: 'pg',
+                text: 'Ridwan diajak memasang taruhan uang pada permainan bola online sambil meminum minuman beralkohol. Berdasarkan QS. Al-Ma\'idah ayat 90, kedua tindakan tersebut dikategorikan sebagai...',
+                options: ['Perbuatan biasa dalam pergaulan', 'Perbuatan riya\'', 'Perbuatan keji (*rijsun*) dan perbuatan syaitan', 'Perbuatan makruh'],
+                answer: 2
+            },
+            {
+                id: 13, type: 'pg',
+                text: 'Seorang pemuda membobol brankas toko dan mengambil uang puluhan juta rupiah secara sembunyi-sembunyi dari tempat terkunci. Hukuman had mencuri dapat dijatuhkan apabila...',
+                options: ['Barang bernilai kurang dari kebutuhan harian', 'Barang mencapai nisab dan diambil dari tempat penyimpanan yang layak', 'Barang milik orang tua sendiri', 'Uang langsung disedekahkan'],
+                answer: 1
+            },
+            {
+                id: 14, type: 'pg',
+                text: 'Pak Arman dipercaya mengelola aset anak yatim, tetapi justru menghabiskannya untuk kepentingan pribadi. Tindakan memakan harta anak yatim secara zalim diancam dalam QS. An-Nisa: 10 seperti...',
+                options: ['Menelan racun berbahaya', 'Menelan api ke dalam perutnya dan masuk neraka Sa\'ir', 'Memikul beban di padang pasir', 'Membuang harta ke laut'],
+                answer: 1
+            },
+            {
+                id: 15, type: 'pg',
+                text: 'Seorang pejabat publik memotong dana bantuan sosial masyarakat demi memperkaya diri. Tindakan korupsi (*Ghulul*) tergolong dosa besar karena...',
+                options: ['Hanya merugikan pribadi pejabat tersebut', 'Merusak keadilan, merampas hak publik, dan mengkhianati amanah', 'Tidak diatur dalam hukum keagamaan', 'Hanya pelanggaran administrasi ringan'],
+                answer: 1
+            },
+
+            // PART 2: 10 PILIHAN GANDA KOMPLEKS (16-25) - Jawaban > 1
+            {
+                id: 16, type: 'pgk',
+                text: 'Peristiwa Tahkim pasca Perang Siffin membawa dampak besar bagi perjalanan Sejarah Islam. Mana sajakah pernyataan yang BENAR terkait dampak peristiwa tersebut? (Pilih lebih dari satu)',
+                options: [
+                    'Terpecahnya umat Islam ke dalam beberapa fraksi pemikiran',
+                    'Munculnya kelompok Khawarij yang memisahkan diri dari barisan Ali',
+                    'Penyatuan seluruh mazhab fiqih secara serentak',
+                    'Awal mula perdebatan teologis mengenai status pelaku dosa besar'
+                ],
+                answer: [0, 1, 3]
+            },
+            {
+                id: 17, type: 'pgk',
+                text: 'Manakah dari pernyataan berikut yang menggambarkan perbedaan pandangan antara aliran Khawarij dan Murji\'ah? (Pilih lebih dari satu)',
+                options: [
+                    'Khawarij menganggap pelaku dosa besar telah kafir dan kekal di neraka',
+                    'Murji\'ah menangguhkan vonis hukum pelaku dosa besar kepada Allah di akhirat',
+                    'Khawarij memandang perbuatan tidak ada kaitan dengan keimanan',
+                    'Murji\'ah meyakini dosa tidak langsung merusak iman selama ada tauhid'
+                ],
+                answer: [0, 1, 3]
+            },
+            {
+                id: 18, type: 'pgk',
+                text: 'Aliran Mu\'tazilah memiliki 5 ajaran dasar (*Al-Ushul al-Khamsah*). Manakah yang termasuk bagian dari kelima prinsip tersebut? (Pilih lebih dari satu)',
+                options: [
+                    'Al-Tauhid (Keesaan Allah)',
+                    'Al-\'Adl (Keadilan Allah)',
+                    'Al-Wa\'d wa al-Wa\'id (Janji dan Ancaman)',
+                    'Jabr al-Fi\'li (Manusia dipaksa takdir)'
+                ],
+                answer: [0, 1, 2]
+            },
+            {
+                id: 19, type: 'pgk',
+                text: 'Ahlus Sunnah wal Jama\'ah dalam pemikiran aqidah dipelopori oleh dua pilar utama. Pernyataan yang BENAR mengenai Asy\'ariyah dan Maturidiyah adalah... (Pilih lebih dari satu)',
+                options: [
+                    'Abu al-Hasan al-Asy\'ari merumuskan konsep Sifat 20 Allah',
+                    'Maturidiyah Samarkand memberikan porsi akal lebih besar daripada Asy\'ariyah',
+                    'Asy\'ariyah menolak total penggunaan dalil rasional',
+                    'Kedua aliran lahir sebagai jalan tengah menyeimbangkan akal dan wahyu'
+                ],
+                answer: [0, 1, 3]
+            },
+            {
+                id: 20, type: 'pgk',
+                text: 'Mengenai perbuatan manusia, berikut adalah perbandingan yang TEPAT antara Jabariyah dan Qadariyah: (Pilih lebih dari satu)',
+                options: [
+                    'Jabariyah meyakini manusia fatalis tanpa kehendak bebas',
+                    'Qadariyah meyakini manusia memiliki *free will* penuh atas tindakannya',
+                    'Jabariyah berpendapat manusia menciptakan takdirnya sendiri',
+                    'Qadariyah menolak bahwa perbuatan jahat manusia diciptakan Allah'
+                ],
+                answer: [0, 1, 3]
+            },
+            {
+                id: 21, type: 'pgk',
+                text: 'Tindak kejahatan pembunuhan dan penyimpangan seksual (Liwat/LGBT) dilarang keras dalam Islam karena... (Pilih lebih dari satu)',
+                options: [
+                    'Mengancam kelangsungan hidup dan keselamatan jiwa (*Hifz an-Nafs*)',
+                    'Merusak tatanan keluarga, moralitas, dan keturunan (*Hifz an-Nasl*)',
+                    'Hanya berdampak pada keuangan pribadi',
+                    'Memicu timbulnya kemurkaan Allah dan penyakit sosial berbahaya'
+                ],
+                answer: [0, 1, 3]
+            },
+            {
+                id: 22, type: 'pgk',
+                text: 'Dampak buruk yang ditimbulkan oleh kebiasaan meminum khamr dan perjudian adalah... (Pilih lebih dari satu)',
+                options: [
+                    'Merusak kejelasan akal pikiran dan kesehatan fisik (*Hifz al-\'Aql*)',
+                    'Menimbulkan permusuhan, kebangkrutan, dan kehancuran rumah tangga',
+                    'Melalaikan seseorang dari mengingat Allah dan melaksanakan salat',
+                    'Meningkatkan pertumbuhan ekonomi masyarakat secara merata'
+                ],
+                answer: [0, 1, 2]
+            },
+            {
+                id: 23, type: 'pgk',
+                text: 'Manakah bentuk tindakan di bawah ini yang tergolong dosa besar yang membinasakan? (Pilih lebih dari satu)',
+                options: [
+                    'Membentak dan menyakiti perasaan orang tua (*\'Uququl Walidain*)',
+                    'Sengaja meninggalkan salat fardhu tanpa uzur syar\'i',
+                    'Mengingatkan kesalahan orang tua dengan tutur kata santun',
+                    'Memutus silaturahmi dan menelantarkan orang tua yang renta'
+                ],
+                answer: [0, 1, 3]
+            },
+            {
+                id: 24, type: 'pgk',
+                text: 'Mencuri dan korupsi merusak prinsip dasar Islam *Hifz al-Mal* (menjaga harta). Pernyataan yang BENAR mengenai keduanya adalah... (Pilih lebih dari satu)',
+                options: [
+                    'Korupsi melibatkan penyalahgunaan wewenang dan pengkhianatan amanah publik',
+                    'Mencuri barang tersimpan rapi yang mencapai nisab dikenakan hukuman had',
+                    'Korupsi dibolehkan jika hasilnya disedekahkan',
+                    'Kedua tindakan merusak keadilan sosial dan kesejahteraan masyarakat'
+                ],
+                answer: [0, 1, 3]
+            },
+            {
+                id: 25, type: 'pgk',
+                text: 'Pernyataan yang TEPAT terkait etika pengelolaan harta anak yatim adalah... (Pilih lebih dari satu)',
+                options: [
+                    'Wali boleh mengambil seperlunya secara patut jika dalam kondisi miskin',
+                    'Harta wajib diserahkan penuh ketika anak yatim telah dewasa dan cerdas',
+                    'Memakan harta anak yatim secara zalim diancam balasan neraka Sa\'ir',
+                    'Wali berhak menghabiskan seluruh harta sebagai upah wajib'
+                ],
+                answer: [0, 1, 2]
+            },
+
+            // PART 3: 10 MENJODOHKAN (26-35)
+            {
+                id: 26, type: 'match',
+                text: 'Musyawarah arbitrase antara pihak Ali bin Abi Thalib dan Mu’awiyah di Dumatu al-Jandal.',
+                pairOption: 'Peristiwa Tahkim',
+                optionsPool: ['Peristiwa Tahkim', 'Mu\'tazilah', 'Jabariyah', 'Syi\'ah', 'Murji\'ah', 'Kasb', 'Qatl al-\'Amd', 'Korupsi (Ghulul)', '\'Uququl Walidain', 'Khamr'],
+                answer: 'Peristiwa Tahkim'
+            },
+            {
+                id: 27, type: 'match',
+                text: 'Aliran yang mencetuskan posisi *Al-Manzilah Baina al-Manzilatain* bagi pelaku dosa besar.',
+                pairOption: 'Mu\'tazilah',
+                optionsPool: ['Peristiwa Tahkim', 'Mu\'tazilah', 'Jabariyah', 'Syi\'ah', 'Murji\'ah', 'Kasb', 'Qatl al-\'Amd', 'Korupsi (Ghulul)', '\'Uququl Walidain', 'Khamr'],
+                answer: 'Mu\'tazilah'
+            },
+            {
+                id: 28, type: 'match',
+                text: 'Pahaman fatalisme teologis bahwa manusia bergerak dipaksa tanpa daya kehendak.',
+                pairOption: 'Jabariyah',
+                optionsPool: ['Peristiwa Tahkim', 'Mu\'tazilah', 'Jabariyah', 'Syi\'ah', 'Murji\'ah', 'Kasb', 'Qatl al-\'Amd', 'Korupsi (Ghulul)', '\'Uququl Walidain', 'Khamr'],
+                answer: 'Jabariyah'
+            },
+            {
+                id: 29, type: 'match',
+                text: 'Kelompok yang meyakini hak kepemimpinan (Imamah) khusus milik Ali dan keturunannya.',
+                pairOption: 'Syi\'ah',
+                optionsPool: ['Peristiwa Tahkim', 'Mu\'tazilah', 'Jabariyah', 'Syi\'ah', 'Murji\'ah', 'Kasb', 'Qatl al-\'Amd', 'Korupsi (Ghulul)', '\'Uququl Walidain', 'Khamr'],
+                answer: 'Syi\'ah'
+            },
+            {
+                id: 30, type: 'match',
+                text: 'Aliran yang menunda penentuan status dosa besar dan menyerahkannya kepada Allah.',
+                pairOption: 'Murji\'ah',
+                optionsPool: ['Peristiwa Tahkim', 'Mu\'tazilah', 'Jabariyah', 'Syi\'ah', 'Murji\'ah', 'Kasb', 'Qatl al-\'Amd', 'Korupsi (Ghulul)', '\'Uququl Walidain', 'Khamr'],
+                answer: 'Murji\'ah'
+            },
+            {
+                id: 31, type: 'match',
+                text: 'Konsep penyeimbang antara takdir Allah dan daya ikhtiar usaha manusia dari Imam Al-Asy\'ari.',
+                pairOption: 'Kasb',
+                optionsPool: ['Peristiwa Tahkim', 'Mu\'tazilah', 'Jabariyah', 'Syi\'ah', 'Murji\'ah', 'Kasb', 'Qatl al-\'Amd', 'Korupsi (Ghulul)', '\'Uququl Walidain', 'Khamr'],
+                answer: 'Kasb'
+            },
+            {
+                id: 32, type: 'match',
+                text: 'Tindak kejahatan menghilangkan nyawa orang lain secara sengaja yang diancam Qisas.',
+                pairOption: 'Qatl al-\'Amd',
+                optionsPool: ['Peristiwa Tahkim', 'Mu\'tazilah', 'Jabariyah', 'Syi\'ah', 'Murji\'ah', 'Kasb', 'Qatl al-\'Amd', 'Korupsi (Ghulul)', '\'Uququl Walidain', 'Khamr'],
+                answer: 'Qatl al-\'Amd'
+            },
+            {
+                id: 33, type: 'match',
+                text: 'Penyalahgunaan wewenang dan dana publik/keuangan demi memperkaya diri.',
+                pairOption: 'Korupsi (Ghulul)',
+                optionsPool: ['Peristiwa Tahkim', 'Mu\'tazilah', 'Jabariyah', 'Syi\'ah', 'Murji\'ah', 'Kasb', 'Qatl al-\'Amd', 'Korupsi (Ghulul)', '\'Uququl Walidain', 'Khamr'],
+                answer: 'Korupsi (Ghulul)'
+            },
+            {
+                id: 34, type: 'match',
+                text: 'Perbuatan durhaka, menyakiti hati, atau menelantarkan kedua orang tua.',
+                pairOption: '\'Uququl Walidain',
+                optionsPool: ['Peristiwa Tahkim', 'Mu\'tazilah', 'Jabariyah', 'Syi\'ah', 'Murji\'ah', 'Kasb', 'Qatl al-\'Amd', 'Korupsi (Ghulul)', '\'Uququl Walidain', 'Khamr'],
+                answer: '\'Uququl Walidain'
+            },
+            {
+                id: 35, type: 'match',
+                text: 'Segala jenis zat atau minuman terlarang yang memabukkan dan merusak kesadaran.',
+                pairOption: 'Khamr',
+                optionsPool: ['Peristiwa Tahkim', 'Mu\'tazilah', 'Jabariyah', 'Syi\'ah', 'Murji\'ah', 'Kasb', 'Qatl al-\'Amd', 'Korupsi (Ghulul)', '\'Uququl Walidain', 'Khamr'],
+                answer: 'Khamr'
+            }
+        ];
+
+        // Core Application State & Controller
+        class AssessmentApp {
+            constructor() {
+                this.questions = JSON.parse(localStorage.getItem('app_questions')) || defaultQuestions;
+                this.adminPassword = localStorage.getItem('admin_password') || 'admin123';
+                this.schoolLogo = localStorage.getItem('school_logo') || 'https://cdn-icons-png.flaticon.com/512/2991/2991148.png';
+                this.currentUser = null;
+                this.currentQuestionIdx = 0;
+                this.answers = {};
+                this.timerInterval = null;
+                this.timeLeft = 90 * 60; // 90 menit
+                this.isAdminTest = false;
+
+                this.initLogo();
+            }
+
+            initLogo() {
+                document.getElementById('app-logo').src = this.schoolLogo;
+                document.querySelector('#result-header-logo img').src = this.schoolLogo;
+            }
+
+            switchAuthTab(tab) {
+                const tabs = document.querySelectorAll('.auth-tab');
+                tabs[0].classList.toggle('active', tab === 'siswa');
+                tabs[1].classList.toggle('active', tab === 'admin');
+
+                document.getElementById('form-login-siswa').classList.toggle('hidden', tab !== 'siswa');
+                document.getElementById('form-login-admin').classList.toggle('hidden', tab !== 'admin');
+            }
+
+            loginSiswa(e) {
+                e.preventDefault();
+                const nama = document.getElementById('siswa-nama').value.trim();
+                const kelas = document.getElementById('siswa-kelas').value;
+                const presensi = document.getElementById('siswa-presensi').value.trim();
+
+                const attemptKey = `attempt_${presensi}_${nama.replace(/\s+/g, '_')}`;
+                let attempts = parseInt(localStorage.getItem(attemptKey) || '0');
+
+                if (attempts >= 2) {
+                    alert('Maaf, Anda telah memenuhi batas maksimal kesempatan pengerjaan (2 Kali).');
+                    return;
+                }
+
+                this.currentUser = {
+                    role: 'siswa',
+                    nama: nama,
+                    kelas: kelas,
+                    presensi: presensi,
+                    attempt: attempts + 1,
+                    attemptKey: attemptKey
+                };
+
+                this.isAdminTest = false;
+                this.startExam();
+            }
+
+            loginAdmin(e) {
+                e.preventDefault();
+                const u = document.getElementById('admin-username').value.trim();
+                const p = document.getElementById('admin-password').value;
+
+                if (u === 'admin' && p === this.adminPassword) {
+                    this.currentUser = { role: 'admin', nama: 'Administrator Guru' };
+                    this.showScreen('screen-admin');
+                    this.renderAdminRekap();
+                    this.renderAdminSoal();
+                    document.getElementById('btn-logout').classList.remove('hidden');
+                } else {
+                    alert('Username atau Password Admin salah!');
+                }
+            }
+
+            startAdminTest() {
+                this.currentUser = {
+                    role: 'admin',
+                    nama: 'Uji Coba Admin',
+                    kelas: 'XI Uji Coba',
+                    presensi: '00',
+                    attempt: 1
+                };
+                this.isAdminTest = true;
+                this.startExam();
+            }
+
+            startExam() {
+                this.answers = {};
+                this.currentQuestionIdx = 0;
+                this.timeLeft = 90 * 60; // Reset 90 Menit
+
+                this.showScreen('screen-exam');
+                document.getElementById('timer-box').classList.remove('hidden');
+                document.getElementById('btn-logout').classList.remove('hidden');
+
+                this.startTimer();
+                this.renderQuestion();
+                this.renderNavGrid();
+            }
+
+            startTimer() {
+                clearInterval(this.timerInterval);
+                this.timerInterval = setInterval(() => {
+                    this.timeLeft--;
+                    const m = Math.floor(this.timeLeft / 60);
+                    const s = this.timeLeft % 60;
+                    document.getElementById('timer-display').innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+
+                    if (this.timeLeft <= 300) {
+                        document.getElementById('timer-box').classList.add('warning');
+                    }
+
+                    if (this.timeLeft <= 0) {
+                        clearInterval(this.timerInterval);
+                        alert('Waktu ujian telah habis! Jawaban Anda akan otomatis dikirim.');
+                        this.submitExam();
+                    }
+                }, 1000);
+            }
+
+            renderQuestion() {
+                const q = this.questions[this.currentQuestionIdx];
+                document.getElementById('q-number').innerText = this.currentQuestionIdx + 1;
+                document.getElementById('q-text').innerHTML = q.text;
+
+                const badge = document.getElementById('q-type');
+                const container = document.getElementById('q-options-container');
+                container.innerHTML = '';
+
+                if (q.type === 'pg') {
+                    badge.innerText = 'Pilihan Ganda (Satu Jawaban)';
+                    q.options.forEach((opt, idx) => {
+                        const isSelected = this.answers[q.id] === idx;
+                        const labelChar = String.fromCharCode(65 + idx);
+                        container.innerHTML += `
+                            <div class="option-item ${isSelected ? 'selected' : ''}" onclick="app.selectPG(${q.id}, ${idx})">
+                                <input type="radio" name="q_${q.id}" ${isSelected ? 'checked' : ''}>
+                                <div><strong>${labelChar}.</strong> ${opt}</div>
+                            </div>
+                        `;
+                    });
+                } else if (q.type === 'pgk') {
+                    badge.innerText = 'Pilihan Ganda Kompleks (Jawaban Benar > 1)';
+                    const currentAns = this.answers[q.id] || [];
+                    q.options.forEach((opt, idx) => {
+                        const isSelected = currentAns.includes(idx);
+                        container.innerHTML += `
+                            <div class="option-item ${isSelected ? 'selected' : ''}" onclick="app.togglePGK(${q.id}, ${idx})">
+                                <input type="checkbox" ${isSelected ? 'checked' : ''}>
+                                <div>${opt}</div>
+                            </div>
+                        `;
+                    });
+                } else if (q.type === 'match') {
+                    badge.innerText = 'Menjodohkan Pasangan';
+                    const currentVal = this.answers[q.id] || '';
+                    let selectOptions = `<option value="">-- Pilih Pasangan yang Tepat --</option>`;
+                    q.optionsPool.forEach(opt => {
+                        selectOptions += `<option value="${opt}" ${currentVal === opt ? 'selected' : ''}>${opt}</option>`;
+                    });
+
+                    container.innerHTML = `
+                        <table class="matching-table">
+                            <thead>
+                                <tr>
+                                    <th>Pernyataan / Konsep</th>
+                                    <th>Pasangan Pilihan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>${q.text}</strong></td>
+                                    <td>
+                                        <select class="form-control" onchange="app.selectMatch(${q.id}, this.value)">
+                                            ${selectOptions}
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    `;
+                }
+
+                // Update nav buttons disabled state
+                document.getElementById('btn-prev').disabled = this.currentQuestionIdx === 0;
+                document.getElementById('btn-next').innerText = this.currentQuestionIdx === this.questions.length - 1 ? 'Selesai' : 'Selanjutnya';
+                this.updateNavGrid();
+            }
+
+            selectPG(qId, optionIdx) {
+                this.answers[qId] = optionIdx;
+                this.renderQuestion();
+            }
+
+            togglePGK(qId, optionIdx) {
+                let current = this.answers[qId] || [];
+                if (current.includes(optionIdx)) {
+                    current = current.filter(i => i !== optionIdx);
+                } else {
+                    current.push(optionIdx);
+                }
+                this.answers[qId] = current;
+                this.renderQuestion();
+            }
+
+            selectMatch(qId, val) {
+                this.answers[qId] = val;
+                this.updateNavGrid();
+            }
+
+            renderNavGrid() {
+                const grid = document.getElementById('q-nav-grid');
+                grid.innerHTML = '';
+                this.questions.forEach((q, idx) => {
+                    grid.innerHTML += `
+                        <button id="nav-btn-${idx}" class="nav-btn" onclick="app.goToQuestion(${idx})">${idx + 1}</button>
+                    `;
+                });
+                this.updateNavGrid();
+            }
+
+            updateNavGrid() {
+                this.questions.forEach((q, idx) => {
+                    const btn = document.getElementById(`nav-btn-${idx}`);
+                    if (!btn) return;
+
+                    const hasAns = this.answers[q.id] !== undefined && this.answers[q.id] !== '' && (Array.isArray(this.answers[q.id]) ? this.answers[q.id].length > 0 : true);
+                    btn.className = `nav-btn ${hasAns ? 'answered' : ''} ${this.currentQuestionIdx === idx ? 'active' : ''}`;
+                });
+            }
+
+            goToQuestion(idx) {
+                this.currentQuestionIdx = idx;
+                this.renderQuestion();
+            }
+
+            prevQuestion() {
+                if (this.currentQuestionIdx > 0) {
+                    this.currentQuestionIdx--;
+                    this.renderQuestion();
+                }
+            }
+
+            nextQuestion() {
+                if (this.currentQuestionIdx < this.questions.length - 1) {
+                    this.currentQuestionIdx++;
+                    this.renderQuestion();
+                } else {
+                    this.confirmSubmit();
+                }
+            }
+
+            confirmSubmit() {
+                const totalAnswered = Object.keys(this.answers).filter(k => {
+                    const v = this.answers[k];
+                    return v !== undefined && v !== '' && (Array.isArray(v) ? v.length > 0 : true);
+                }).length;
+
+                if (totalAnswered < this.questions.length) {
+                    if (!confirm(`Anda baru menjawab ${totalAnswered} dari 35 soal. Yakin ingin menyelesaikan sekarang?`)) {
+                        return;
+                    }
+                } else {
+                    if (!confirm('Yakin ingin menyelesaikan asesmen ini?')) return;
+                }
+
+                this.submitExam();
+            }
+
+            submitExam() {
+                clearInterval(this.timerInterval);
+                document.getElementById('timer-box').classList.add('hidden');
+
+                // Hitung Skor (Bobot Total = 100)
+                // 15 PG = 37.5 poin (2.5 per soal)
+                // 10 PGK = 32.5 poin (3.25 per soal)
+                // 10 Match = 30.0 poin (3.0 per soal)
+                let totalScore = 0;
+
+                this.questions.forEach(q => {
+                    const userAns = this.answers[q.id];
+                    if (q.type === 'pg') {
+                        if (userAns === q.answer) totalScore += 2.5;
+                    } else if (q.type === 'pgk') {
+                        if (Array.isArray(userAns)) {
+                            const correctArr = q.answer.sort().join(',');
+                            const userArr = userAns.sort().join(',');
+                            if (correctArr === userArr) totalScore += 3.25;
+                        }
+                    } else if (q.type === 'match') {
+                        if (userAns === q.answer) totalScore += 3.0;
+                    }
+                });
+
+                const finalScore = Math.round(totalScore);
+
+                // Save result if Student
+                if (!this.isAdminTest && this.currentUser.role === 'siswa') {
+                    localStorage.setItem(this.currentUser.attemptKey, this.currentUser.attempt);
+
+                    const rekapList = JSON.parse(localStorage.getItem('app_rekap_nilai') || '[]');
+                    rekapList.push({
+                        nama: this.currentUser.nama,
+                        kelas: this.currentUser.kelas,
+                        presensi: this.currentUser.presensi,
+                        attempt: this.currentUser.attempt,
+                        score: finalScore,
+                        date: new Date().toLocaleString('id-ID')
+                    });
+                    localStorage.setItem('app_rekap_nilai', JSON.stringify(rekapList));
+                }
+
+                this.showResults(finalScore);
+            }
+
+            showResults(score) {
+                this.showScreen('screen-result');
+
+                document.getElementById('res-nama').innerText = this.currentUser.nama;
+                document.getElementById('res-kelas').innerText = this.currentUser.kelas;
+                document.getElementById('res-presensi').innerText = this.currentUser.presensi;
+                document.getElementById('res-attempt').innerText = `${this.currentUser.attempt} dari 2`;
+                document.getElementById('res-score').innerText = score;
+
+                const statusBadge = document.getElementById('res-status-badge');
+                const msg = document.getElementById('res-message');
+                const btnReAttempt = document.getElementById('btn-re-attempt');
+
+                if (score >= 80) {
+                    statusBadge.className = 'badge-status badge-pass';
+                    statusBadge.innerText = 'TUNTAS (KKM ≥ 80)';
+                    msg.innerText = 'Selamat! Anda telah mencapai Kriteria Ketuntasan Minimal (KKM). Hasil belajar Anda sangat baik.';
+                    btnReAttempt.classList.add('hidden');
+                } else {
+                    statusBadge.className = 'badge-status badge-fail';
+                    statusBadge.innerText = 'BELUM TUNTAS (KKM < 80)';
+                    msg.innerText = 'Nilai Anda belum mencapai KKM (80).';
+
+                    if (!this.isAdminTest && this.currentUser.attempt < 2) {
+                        btnReAttempt.classList.remove('hidden');
+                    } else {
+                        btnReAttempt.classList.add('hidden');
+                    }
+                }
+            }
+
+            startReAttempt() {
+                this.currentUser.attempt = 2;
+                this.startExam();
+            }
+
+            renderAdminRekap() {
+                const tbody = document.getElementById('admin-rekap-tbody');
+                const rekapList = JSON.parse(localStorage.getItem('app_rekap_nilai') || '[]');
+                tbody.innerHTML = '';
+
+                if (rekapList.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8;">Belum ada data pengerjaan siswa.</td></tr>`;
+                    return;
+                }
+
+                rekapList.forEach((r, idx) => {
+                    const isPass = r.score >= 80;
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td><strong>${r.nama}</strong></td>
+                            <td>${r.kelas}</td>
+                            <td>${r.presensi}</td>
+                            <td>Percobaan Ke-${r.attempt}</td>
+                            <td><strong style="color:var(--primary-dark);">${r.score}</strong></td>
+                            <td><span class="badge-status ${isPass ? 'badge-pass' : 'badge-fail'}" style="font-size:0.75rem;">${isPass ? 'Tuntas' : 'Belum Tuntas'}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            renderAdminSoal() {
+                const list = document.getElementById('admin-soal-list');
+                list.innerHTML = '';
+
+                this.questions.forEach((q, idx) => {
+                    list.innerHTML += `
+                        <div style="border:1px solid var(--border); padding:1rem; border-radius:8px; margin-bottom:1rem;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                                <strong>Soal #${idx + 1} (${q.type.toUpperCase()})</strong>
+                                <button class="btn btn-secondary" style="padding:0.2rem 0.5rem; font-size:0.8rem;" onclick="app.editSoalText(${q.id})">Edit Teks</button>
+                            </div>
+                            <p style="font-size:0.95rem;">${q.text}</p>
+                        </div>
+                    `;
+                });
+            }
+
+            editSoalText(qId) {
+                const q = this.questions.find(item => item.id === qId);
+                const newText = prompt('Ubah narasi/teks soal:', q.text);
+                if (newText && newText.trim() !== '') {
+                    q.text = newText;
+                    localStorage.setItem('app_questions', JSON.stringify(this.questions));
+                    this.renderAdminSoal();
+                    alert('Pertanyaan berhasil diperbarui!');
+                }
+            }
+
+            switchAdminTab(tab) {
+                const navs = document.querySelectorAll('.admin-nav-item');
+                navs[0].classList.toggle('active', tab === 'rekap');
+                navs[1].classList.toggle('active', tab === 'soal');
+                navs[2].classList.toggle('active', tab === 'pengaturan');
+
+                document.getElementById('admin-tab-rekap').classList.toggle('hidden', tab !== 'rekap');
+                document.getElementById('admin-tab-soal').classList.toggle('hidden', tab !== 'soal');
+                document.getElementById('admin-tab-pengaturan').classList.toggle('hidden', tab !== 'pengaturan');
+            }
+
+            changeAdminPassword(e) {
+                e.preventDefault();
+                const oldP = document.getElementById('pass-old').value;
+                const newP = document.getElementById('pass-new').value;
+
+                if (oldP !== this.adminPassword) {
+                    alert('Password lama salah!');
+                    return;
+                }
+
+                this.adminPassword = newP;
+                localStorage.setItem('admin_password', newP);
+                alert('Password admin berhasil diganti!');
+                document.getElementById('pass-old').value = '';
+                document.getElementById('pass-new').value = '';
+            }
+
+            changeSchoolLogo(e) {
+                e.preventDefault();
+                const url = document.getElementById('logo-url-input').value;
+                this.schoolLogo = url;
+                localStorage.setItem('school_logo', url);
+                this.initLogo();
+                alert('Logo sekolah berhasil diperbarui!');
+            }
+
+            clearStudentData() {
+                if (confirm('Apakah Anda yakin ingin menghapus seluruh data hasil nilai dan riwayat percobaan siswa?')) {
+                    localStorage.removeItem('app_rekap_nilai');
+                    Object.keys(localStorage).forEach(key => {
+                        if (key.startsWith('attempt_')) localStorage.removeItem(key);
+                    });
+                    this.renderAdminRekap();
+                    alert('Seluruh data rekap nilai siswa berhasil di-reset.');
+                }
+            }
+
+            showScreen(id) {
+                ['screen-auth', 'screen-exam', 'screen-result', 'screen-admin'].forEach(s => {
+                    document.getElementById(s).classList.add('hidden');
+                });
+                document.getElementById(id).classList.remove('hidden');
+            }
+
+            logout() {
+                clearInterval(this.timerInterval);
+                this.currentUser = null;
+                this.showScreen('screen-auth');
+                document.getElementById('timer-box').classList.add('hidden');
+                document.getElementById('btn-logout').classList.add('hidden');
+            }
+        }
+
+        // Initialize App
+        const app = new AssessmentApp();
+    </script>
+</body>
+</html>
